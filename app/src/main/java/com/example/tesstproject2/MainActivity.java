@@ -3,6 +3,7 @@ package com.example.tesstproject2;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -27,7 +28,7 @@ import android.content.DialogInterface;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends Activity implements OnClickListener{
     private ImageButton currPaint;
     private DrawingView drawView;
 
@@ -66,12 +67,17 @@ public class MainActivity extends AppCompatActivity{
         bitmap.recycle();
     }
 
-    //--------------------------размер------------------------------------------------
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
+        //--------------------------размер------------------------------------------------
         float smallBrush = getResources().getInteger(R.integer.small_size);
         float mediumBrush = getResources().getInteger(R.integer.medium_size);
         float largeBrush = getResources().getInteger(R.integer.large_size);
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }
