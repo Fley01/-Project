@@ -12,8 +12,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.view.MotionEvent;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.util.TypedValue;
 
-public class DrawingView extends View {
+public class DrawingView<brushSize, lastBrushSize> extends View {
     private Path drawPath;
     private Paint drawPaint, canvasPaint;
     private int paintColor = 0xFF660000;
@@ -39,6 +42,17 @@ public class DrawingView extends View {
     }
 //-------------------------------------------------------------------
     private void setupDrawing(){
+        float brushSize, lastBrushSize;
+
+        brushSize = getResources().getInteger(R.integer.medium_size);
+        lastBrushSize = brushSize;
+
+        drawPaint.setStrokeWidth(brushSize);
+
+        float pixelAmount = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                newSize, getResources().getDisplayMetrics());
+        brushSize=pixelAmount;
+        drawPaint.setStrokeWidth(brushSize);
     }
 //-------------------------------------------------------------------
     @Override
@@ -81,5 +95,6 @@ public class DrawingView extends View {
         paintColor = Color.parseColor(newColor);
         drawPaint.setColor(paintColor);
     }
+//--------------------------------------------------------------------
 
 }

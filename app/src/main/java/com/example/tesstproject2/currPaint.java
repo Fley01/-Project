@@ -27,6 +27,7 @@ public class currPaint extends Activity implements View.OnClickListener {
         if(view.getId()==R.id.draw_btn){
             final Dialog brushDialog = new Dialog(this);
             brushDialog.setTitle("Brush size:");
+            brushDialog.setContentView(R.layout.brush_chooser);
         }
     }
 }

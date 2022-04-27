@@ -22,6 +22,39 @@
                 <solid android:color="#00000000" />
                 <corners android:radius="10dp" />
             </shape>
+            <shape xmlns:android="http://schemas.android.com/apk/res/android"
+                android:dither="true"
+                android:shape="oval" >
+
+                <size
+                    android:height="@dimen/small_brush"
+                    android:width="@dimen/small_brush" />
+
+                <solid android:color="#FF666666" />
+
+            </shape>
+            <shape xmlns:android="http://schemas.android.com/apk/res/android"
+                android:dither="true"
+                android:shape="oval" >
+
+                <size
+                    android:height="@dimen/medium_brush"
+                    android:width="@dimen/medium_brush" />
+
+                <solid android:color="#FF666666" />
+
+            </shape>
+            <shape xmlns:android="http://schemas.android.com/apk/res/android"
+                android:dither="true"
+                android:shape="oval" >
+
+                <size
+                    android:height="@dimen/medium_brush"
+                    android:width="@dimen/medium_brush" />
+
+                <solid android:color="#FF666666" />
+
+            </shape>
         </item>
     </layer-list>
 </selector>
