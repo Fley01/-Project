@@ -7,6 +7,8 @@
     <integer name="medium_size">20</integer>
     <dimen name="large_brush">30dp</dimen>
     <integer name="large_size">30</integer>
+    <dimen name="size_button_w">200dp</dimen>
+    <dimen name="size_button_h">70dp</dimen>
 
     <string name="start_new">New</string>
     <string name="brush">Brush</string>

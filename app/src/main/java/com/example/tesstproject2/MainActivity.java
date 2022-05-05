@@ -40,6 +40,10 @@ public class MainActivity extends Activity implements OnClickListener{
         drawView = (DrawingView) findViewById(R.id.drawing);
         LinearLayout paintLayout = (LinearLayout) findViewById(R.id.paint_colors);
         currPaint = (ImageButton) paintLayout.getChildAt(0);
+
+        smallBrush = getResources().getInteger(R.integer.small_size);
+        mediumBrush = getResources().getInteger(R.integer.medium_size);
+        largeBrush = getResources().getInteger(R.integer.large_size);
     }
 
 
@@ -72,14 +76,6 @@ public class MainActivity extends Activity implements OnClickListener{
     //--------------------------размер------------------------------------------------
     private float smallBrush, mediumBrush, largeBrush;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-
-        smallBrush = getResources().getInteger(R.integer.small_size);
-        mediumBrush = getResources().getInteger(R.integer.medium_size);
-        largeBrush = getResources().getInteger(R.integer.large_size);
-    }
     @Override
     public void onClick(View view){
         final Dialog brushDialog = new Dialog(this);
