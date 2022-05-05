@@ -15,6 +15,9 @@ import android.view.MotionEvent;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.util.TypedValue;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.util.TypedValue;
 
 public class DrawingView<brushSize, lastBrushSize> extends View {
     private Path drawPath;
@@ -42,17 +45,24 @@ public class DrawingView<brushSize, lastBrushSize> extends View {
     }
 //-------------------------------------------------------------------
     private void setupDrawing(){
-        float brushSize, lastBrushSize;
 
         brushSize = getResources().getInteger(R.integer.medium_size);
         lastBrushSize = brushSize;
+    }
 
-        drawPaint.setStrokeWidth(brushSize);
-
+    float brushSize, lastBrushSize;
+    public void setBrushSize(float newSize){
         float pixelAmount = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 newSize, getResources().getDisplayMetrics());
         brushSize=pixelAmount;
         drawPaint.setStrokeWidth(brushSize);
+    }
+
+    public void setLastBrushSize(float lastSize){
+        lastBrushSize=lastSize;
+    }
+    public float getLastBrushSize(){
+        return lastBrushSize;
     }
 //-------------------------------------------------------------------
     @Override
