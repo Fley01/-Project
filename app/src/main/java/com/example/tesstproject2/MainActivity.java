@@ -31,6 +31,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity implements OnClickListener{
     private ImageButton currPaint;
     private DrawingView drawView;
+    private ImageButton drawBtn, eraseBtn, newBtn, saveBtn;
 
     //-----------------------рисование-----------------------------------
     @Override
@@ -41,9 +42,14 @@ public class MainActivity extends Activity implements OnClickListener{
         LinearLayout paintLayout = (LinearLayout) findViewById(R.id.paint_colors);
         currPaint = (ImageButton) paintLayout.getChildAt(0);
 
+        //brush size
         smallBrush = getResources().getInteger(R.integer.small_size);
         mediumBrush = getResources().getInteger(R.integer.medium_size);
         largeBrush = getResources().getInteger(R.integer.large_size);
+
+        //save
+        saveBtn = (ImageButton)findViewById(R.id.save_btn);
+        saveBtn.setOnClickListener(this);
     }
 
 
@@ -78,6 +84,7 @@ public class MainActivity extends Activity implements OnClickListener{
 
     @Override
     public void onClick(View view){
+        //brush size
         final Dialog brushDialog = new Dialog(this);
         brushDialog.setTitle("Brush size:");
 
@@ -114,5 +121,42 @@ public class MainActivity extends Activity implements OnClickListener{
         });
 
         brushDialog.show();
+
+        //save
+        if(view.getId()==R.id.save_btn){
+            AlertDialog.Builder saveDialog = new AlertDialog.Builder(this);
+            saveDialog.setTitle("Save drawing");
+            saveDialog.setMessage("Save drawing to device Gallery?");
+            saveDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int which){
+                    //save drawing
+                }
+            });
+            saveDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int which){
+                    dialog.cancel();
+                }
+            });
+            saveDialog.show();
+        }
+
+        drawView.setDrawingCacheEnabled(true);
+        String imgSaved = MediaStore.Images.Media.insertImage(
+                getContentResolver(), drawView.getDrawingCache(),
+                UUID.randomUUID().toString()+".png", "drawing");
+        if(imgSaved!=null){
+            Toast savedToast = Toast.makeText(getApplicationContext(),
+                    "Drawing saved to Gallery!", Toast.LENGTH_SHORT);
+            savedToast.show();
+        }
+        else{
+            Toast unsavedToast = Toast.makeText(getApplicationContext(),
+                    "Oops! Image could not be saved.", Toast.LENGTH_SHORT);
+            unsavedToast.show();
+        }
+
+        drawView.destroyDrawingCache();
     }
+    //-------------------------------------------save--------------------------------------------
+
 }
