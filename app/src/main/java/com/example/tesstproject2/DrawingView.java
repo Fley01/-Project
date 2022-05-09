@@ -106,5 +106,8 @@ public class DrawingView<brushSize, lastBrushSize> extends View {
         drawPaint.setColor(paintColor);
     }
 //--------------------------------------------------------------------
-
+    public void startNew(){
+        drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        invalidate();
+    }
 }
