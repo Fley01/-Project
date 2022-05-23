@@ -4,22 +4,33 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PersistableBundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+import java.io.Serializable;
 import java.util.UUID;
 import android.provider.MediaStore;
 import android.app.AlertDialog;
@@ -28,11 +39,21 @@ import android.content.DialogInterface;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnClickListener{
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+
+public class MainActivity extends Activity implements OnClickListener {
     private ImageButton currPaint;
     private DrawingView drawView;
-    private ImageButton drawBtn, eraseBtn, newBtn, saveBtn;
-
+    private ImageButton newBtn, saveBtn;
+    private float smallBrush, mediumBrush, largeBrush;
     //-----------------------рисование-----------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +75,7 @@ public class MainActivity extends Activity implements OnClickListener{
         //New Drawings
         newBtn = (ImageButton)findViewById(R.id.new_btn);
         newBtn.setOnClickListener(this);
+
     }
 
 
@@ -71,67 +93,113 @@ public class MainActivity extends Activity implements OnClickListener{
     }
 
     //-------------------------------------------------------------------------------------------
-    public void saveAsBitmap(View view, String Pictures) {
-        view.setDrawingCacheEnabled(true);
-        Bitmap bitmap = view.getDrawingCache();
-        try {
-            FileOutputStream out = openFileOutput(Pictures, MODE_PRIVATE);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // ставить 85 бесполезно, PNG - это формат сжатия без потерь
-        } catch (Exception ignored) {
-        }
-        bitmap.recycle();
 
+    @Override
+    protected void onStop() {
+        drawView.setDrawingCacheEnabled(true);
+        String imgSaved = MediaStore.Images.Media.insertImage(
+                getContentResolver(), drawView.getDrawingCache(),
+                "myDrawing" + ".png", "drawing");
+        finish();
+        super.onStop();
     }
 
     //--------------------------размер------------------------------------------------
-    private float smallBrush, mediumBrush, largeBrush;
+
 
     @Override
     public void onClick(View view){
 
         //brush size
-        final Dialog brushDialog = new Dialog(this);
-        brushDialog.setTitle("Brush size:");
+        if (view.getId() == R.id.draw_btn) {
 
-        brushDialog.setContentView(R.layout.brush_chooser);
+            final Dialog brushDialog = new Dialog(this);
+            brushDialog.setTitle("Размер кисти:");
 
-        ImageButton smallBtn = (ImageButton)brushDialog.findViewById(R.id.small_brush);
-        smallBtn.setOnClickListener(new OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                drawView.setBrushSize(smallBrush);
-                drawView.setLastBrushSize(smallBrush);
-                brushDialog.dismiss();
-            }
-        });
+            brushDialog.setContentView(R.layout.brush_chooser);
 
-        ImageButton mediumBtn = (ImageButton)brushDialog.findViewById(R.id.medium_brush);
-        mediumBtn.setOnClickListener(new OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                drawView.setBrushSize(mediumBrush);
-                drawView.setLastBrushSize(mediumBrush);
-                brushDialog.dismiss();
-            }
-        });
+            ImageButton smallBtn = (ImageButton) brushDialog.findViewById(R.id.small_brush);
+            smallBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    drawView.setBrushSize(smallBrush);
+                    drawView.setLastBrushSize(smallBrush);
+                    brushDialog.dismiss();
+                }
+            });
 
-        ImageButton largeBtn = (ImageButton)brushDialog.findViewById(R.id.large_brush);
-        largeBtn.setOnClickListener(new OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                drawView.setBrushSize(largeBrush);
-                drawView.setLastBrushSize(largeBrush);
-                brushDialog.dismiss();
-            }
-        });
+            ImageButton mediumBtn = (ImageButton) brushDialog.findViewById(R.id.medium_brush);
+            mediumBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    drawView.setBrushSize(mediumBrush);
+                    drawView.setLastBrushSize(mediumBrush);
+                    brushDialog.dismiss();
+                }
+            });
 
-        brushDialog.show();
+            ImageButton largeBtn = (ImageButton) brushDialog.findViewById(R.id.large_brush);
+            largeBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    drawView.setBrushSize(largeBrush);
+                    drawView.setLastBrushSize(largeBrush);
+                    brushDialog.dismiss();
+                }
+            });
 
+            brushDialog.show();
+        }
         //save
+        if (view.getId() == R.id.save_btn) {
+            AlertDialog.Builder saveDialog = new AlertDialog.Builder(this);
+            saveDialog.setTitle("Сохранить изображение");
+            saveDialog.setMessage("Сохранить в голирее?");
+            saveDialog.setPositiveButton("да", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    drawView.setDrawingCacheEnabled(true);
+                    String imgSaved = MediaStore.Images.Media.insertImage(
+                            getContentResolver(), drawView.getDrawingCache(),
+                            "myDrawing" + ".png", "drawing");
+                    if (imgSaved != null) {
+                        Toast savedToast = Toast.makeText(getApplicationContext(),
+                                "Изображение сохраненно", Toast.LENGTH_SHORT);
+                        savedToast.show();
+                    } else {
+                        Toast unsavedToast = Toast.makeText(getApplicationContext(),
+                                "Не удалось сохранить", Toast.LENGTH_SHORT);
+                        unsavedToast.show();
+                    }
+                }
+            });
+            saveDialog.setNegativeButton("Закрыть", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            saveDialog.show();
+        }
+
+        drawView.destroyDrawingCache();
 
         //new drawings
+        if(view.getId()==R.id.new_btn){
+            AlertDialog.Builder newDialog = new AlertDialog.Builder(this);
+            newDialog.setTitle("Новое изображение");
+            newDialog.setMessage("Обновить изображение?");
+            newDialog.setPositiveButton("Да", new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int which){
+                    drawView.startNew();
+                    dialog.dismiss();
+                }
+            });
+            newDialog.setNegativeButton("Закрыть", new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int which){
+                    dialog.cancel();
+                }
+            });
+            newDialog.show();
+        }
 
     }
-    //-------------------------------------------save--------------------------------------------
-
 }
