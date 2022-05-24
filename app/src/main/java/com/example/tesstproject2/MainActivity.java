@@ -1,37 +1,17 @@
 package com.example.tesstproject2;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.PersistableBundle;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-
-import java.io.Serializable;
-import java.util.UUID;
 import android.provider.MediaStore;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -39,21 +19,23 @@ import android.content.DialogInterface;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class MainActivity extends Activity implements OnClickListener {
     private ImageButton currPaint;
     private DrawingView drawView;
     private ImageButton newBtn, saveBtn;
     private float smallBrush, mediumBrush, largeBrush;
+    String[] Items;
+    ImageView mImageView;
+    ImageButton mButton;
+    final int bmpHeight = 160;
+    final int bmpWidth = 160;
+    static final int CAMERA_CODE = 1;
+    static final int GALLERY_CODE = 0;
+    private ImageView imageView;
+    private final int Pick_image = 1;
     //-----------------------рисование-----------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +57,6 @@ public class MainActivity extends Activity implements OnClickListener {
         //New Drawings
         newBtn = (ImageButton)findViewById(R.id.new_btn);
         newBtn.setOnClickListener(this);
-
     }
 
 
@@ -103,7 +84,32 @@ public class MainActivity extends Activity implements OnClickListener {
         finish();
         super.onStop();
     }
+    //----------------------------------------------------------------------------------------
 
+    public void ImageOnClick(View v) {
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        startActivityForResult(photoPickerIntent, Pick_image);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        switch (requestCode) {
+            case Pick_image:
+                if (resultCode == RESULT_OK) {
+                    try {
+
+                        final Uri imageUri = imageReturnedIntent.getData();
+                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                        imageView.setImageBitmap(selectedImage);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+        }
+    }
     //--------------------------размер------------------------------------------------
 
 
