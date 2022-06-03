@@ -77,12 +77,11 @@ public class MainActivity extends Activity implements OnClickListener {
 
     @Override
     protected void onStop() {
+        super.onStop();
         drawView.setDrawingCacheEnabled(true);
         String imgSaved = MediaStore.Images.Media.insertImage(
                 getContentResolver(), drawView.getDrawingCache(),
                 "myDrawing" + ".png", "drawing");
-        finish();
-        super.onStop();
     }
     //----------------------------------------------------------------------------------------
 
@@ -95,19 +94,18 @@ public class MainActivity extends Activity implements OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
-        switch (requestCode) {
-            case Pick_image:
-                if (resultCode == RESULT_OK) {
-                    try {
+        if (requestCode == Pick_image) {
+            if (resultCode == RESULT_OK) {
+                try {
 
-                        final Uri imageUri = imageReturnedIntent.getData();
-                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                        final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                        imageView.setImageBitmap(selectedImage);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    final Uri imageUri = imageReturnedIntent.getData();
+                    final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    drawView.canvasBitmap = BitmapFactory.decodeStream(imageStream);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
+            }
         }
     }
     //--------------------------размер------------------------------------------------

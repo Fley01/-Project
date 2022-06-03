@@ -24,7 +24,7 @@ public class DrawingView<brushSize, lastBrushSize> extends View {
     private Paint drawPaint, canvasPaint;
     private int paintColor = 0xFF660000;
     private Canvas drawCanvas;
-    private Bitmap canvasBitmap;
+    public Bitmap canvasBitmap;
     private DrawingView drawView;
 //-------------------------------------------------------------------
     public DrawingView(Context context, AttributeSet attrs){
