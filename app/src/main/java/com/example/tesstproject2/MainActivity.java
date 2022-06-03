@@ -2,15 +2,11 @@ package com.example.tesstproject2;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.provider.MediaStore;
 import android.app.AlertDialog;
@@ -19,22 +15,18 @@ import android.content.DialogInterface;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class MainActivity extends Activity implements OnClickListener {
-    private ImageButton currPaint;
     private DrawingView drawView;
-    private ImageButton newBtn, saveBtn;
+    private ImageButton newBtn, saveBtn, eraseBtn, currPaint;
     private float smallBrush, mediumBrush, largeBrush;
-    String[] Items;
-    ImageView mImageView;
-    ImageButton mButton;
-    final int bmpHeight = 160;
-    final int bmpWidth = 160;
-    static final int CAMERA_CODE = 1;
-    static final int GALLERY_CODE = 0;
-    private ImageView imageView;
     private final int Pick_image = 1;
     //-----------------------рисование-----------------------------------
     @Override
@@ -57,6 +49,14 @@ public class MainActivity extends Activity implements OnClickListener {
         //New Drawings
         newBtn = (ImageButton)findViewById(R.id.new_btn);
         newBtn.setOnClickListener(this);
+
+        //erase
+        eraseBtn = (ImageButton)findViewById(R.id.erase_btn);
+        eraseBtn.setOnClickListener(this);
+
+        //serialization
+        newBtn = (ImageButton)findViewById(R.id.shipment);
+        newBtn.setOnClickListener(this);
     }
 
 
@@ -68,8 +68,9 @@ public class MainActivity extends Activity implements OnClickListener {
             String color = view.getTag().toString();
 
             drawView.setColor(color);
-
             currPaint = (ImageButton) view;
+            drawView.setErase(false);
+            drawView.setBrushSize(drawView.getLastBrushSize());
         }
     }
 
@@ -100,7 +101,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
                     final Uri imageUri = imageReturnedIntent.getData();
                     final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                     drawView.canvasBitmap = BitmapFactory.decodeStream(imageStream);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -129,6 +129,7 @@ public class MainActivity extends Activity implements OnClickListener {
                     drawView.setBrushSize(smallBrush);
                     drawView.setLastBrushSize(smallBrush);
                     brushDialog.dismiss();
+                    drawView.setErase(false);
                 }
             });
 
@@ -139,6 +140,7 @@ public class MainActivity extends Activity implements OnClickListener {
                     drawView.setBrushSize(mediumBrush);
                     drawView.setLastBrushSize(mediumBrush);
                     brushDialog.dismiss();
+                    drawView.setErase(false);
                 }
             });
 
@@ -149,6 +151,7 @@ public class MainActivity extends Activity implements OnClickListener {
                     drawView.setBrushSize(largeBrush);
                     drawView.setLastBrushSize(largeBrush);
                     brushDialog.dismiss();
+                    drawView.setErase(false);
                 }
             });
 
@@ -204,6 +207,40 @@ public class MainActivity extends Activity implements OnClickListener {
             });
             newDialog.show();
         }
+        //erase
+        if(view.getId()==R.id.erase_btn){
+            final Dialog brushDialog = new Dialog(this);
+            brushDialog.setTitle("Eraser size:");
+            brushDialog.setContentView(R.layout.brush_chooser);
+            ImageButton smallBtn = (ImageButton)brushDialog.findViewById(R.id.small_brush);
+            smallBtn.setOnClickListener(new OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    drawView.setErase(true);
+                    drawView.setBrushSize(smallBrush);
+                    brushDialog.dismiss();
+                }
+            });
+            ImageButton mediumBtn = (ImageButton)brushDialog.findViewById(R.id.medium_brush);
+            mediumBtn.setOnClickListener(new OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    drawView.setErase(true);
+                    drawView.setBrushSize(mediumBrush);
+                    brushDialog.dismiss();
+                }
+            });
+            ImageButton largeBtn = (ImageButton)brushDialog.findViewById(R.id.large_brush);
+            largeBtn.setOnClickListener(new OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    drawView.setErase(true);
+                    drawView.setBrushSize(largeBrush);
+                    brushDialog.dismiss();
+                }
+            });
 
+            brushDialog.show();
+        }
     }
 }

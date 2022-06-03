@@ -34,8 +34,5 @@
             android:src="@drawable/large" />
 
     </LinearLayout>
-<!--     кнопки изменения размера кисти-->
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
