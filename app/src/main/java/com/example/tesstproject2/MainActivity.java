@@ -25,7 +25,7 @@ import java.io.InputStream;
 
 public class MainActivity extends Activity implements OnClickListener {
     private DrawingView drawView;
-    private ImageButton newBtn, saveBtn, eraseBtn, currPaint;
+    private ImageButton newBtn, saveBtn, eraseBtn, currPaint, shipment;
     private float smallBrush, mediumBrush, largeBrush;
     private final int Pick_image = 1;
     //-----------------------рисование-----------------------------------
@@ -55,8 +55,9 @@ public class MainActivity extends Activity implements OnClickListener {
         eraseBtn.setOnClickListener(this);
 
         //serialization
-        newBtn = (ImageButton)findViewById(R.id.shipment);
-        newBtn.setOnClickListener(this);
+        shipment = (ImageButton)findViewById(R.id.shipment);
+        shipment.setOnClickListener(this);
+
     }
 
 
@@ -243,4 +244,5 @@ public class MainActivity extends Activity implements OnClickListener {
             brushDialog.show();
         }
     }
+
 }
